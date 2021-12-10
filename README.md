@@ -15,7 +15,7 @@
 
 # Build
 ```
-composer
+composer install
 ```
 
 ## Run test
