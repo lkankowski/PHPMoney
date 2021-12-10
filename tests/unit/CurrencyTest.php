@@ -3,7 +3,7 @@
 namespace Tests\Unit;
 
 use Finance\Currency;
-use InvalidArgumentException;
+use Finance\InvalidCurrencyException;
 use PHPUnit\Framework\TestCase;
 
 
@@ -21,7 +21,7 @@ final class CurrencyTest extends TestCase
 
     public function testInvalidCreateCurrencyInstance(): void
     {
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(InvalidCurrencyException::class);
         $zloty = new Currency("ABC");
     }
 

@@ -1,18 +1,16 @@
 {
     "name": "lkank/money",
-    "description": "Money class implementation for job assesment",
-    "xtype": "library",
+    "description": "Money class implementation for job assessment",
     "license": "free",
     "authors": [
         {
             "name": "lkankowski",
-            "email": "leszek.kankowski@gmail.com"
         }
     ],
     "autoload": {
-        "classmap": [
-            "src/"
-        ]
+         "psr-4": {
+            "Finance\\": "src"
+        }
     },
     "require": {
     },

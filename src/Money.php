@@ -3,16 +3,20 @@
 namespace Finance;
 
 use InvalidArgumentException;
+use DivisionByZeroError;
+
 
 class Money
 {
     private string $amount;
     private Currency $currency;
 
-    // when we need some advanced rounding policy, we could create some external calculator used for calculations
+    // when we need some advanced rounding policy, we could create
+    // external calculator and inject it to this class for calculations
 
     public function __construct(string $amount, Currency $currency)
     {
+        $amount = $this->sanitizeAmount($amount);
         if (! $this->isValidAmount($amount)) {
             throw new InvalidArgumentException();
         }
@@ -31,10 +35,20 @@ class Money
         return preg_match("/^-?\d+(\.\d{1,2})?$/", $amount) === 1; // can be slow - if needed change to str operations
     }
 
+    private function sanitizeAmount(string $amount): string
+    {
+        $sign = substr($amount, 0, 1) === "-" ? "-" : "";
+        $sanitizedAmount = ltrim($amount, "-0"); // remove leading zeros
+        if (($sanitizedAmount === "") || (substr($sanitizedAmount, 0, 1) === ".")) {
+            $sanitizedAmount = "0" . $sanitizedAmount;
+        }
+        return $sign . $sanitizedAmount;
+    }
+
     public function add(Money $money): Money
     {
         if ($money->getCurrency() != $this->getCurrency()) {
-            throw new InvalidArgumentException(); //TODO: change to InvalidCurrencyException
+            throw new InvalidCurrencyException();
         }
         return new Money($this->amountAdd($this->amount, $money->getAmount()), $this->currency);
     }
@@ -58,7 +72,7 @@ class Money
     public function substract(Money $money): Money
     {
         if ($money->getCurrency() != $this->getCurrency()) {
-            throw new InvalidArgumentException(); //TODO: change to InvalidCurrencyException
+            throw new InvalidCurrencyException();
         }
         return new Money(bcsub($this->amount, $money->getAmount(), 2), $this->currency);
     }
@@ -66,7 +80,7 @@ class Money
     public function multiplyBy(Money $money): Money
     {
         if ($money->getCurrency() != $this->getCurrency()) {
-            throw new InvalidArgumentException(); //TODO: change to InvalidCurrencyException
+            throw new InvalidCurrencyException();
         }
         return new Money(bcmul($this->amount, $money->getAmount(), 2), $this->currency);
     }
@@ -74,7 +88,10 @@ class Money
     public function divideBy(Money $money): Money
     {
         if ($money->getCurrency() != $this->getCurrency()) {
-            throw new InvalidArgumentException(); //TODO: change to InvalidCurrencyException
+            throw new InvalidCurrencyException();
+        }
+        if ($money->getAmount() === "0") {
+            throw new DivisionByZeroError();
         }
         return new Money(bcdiv($this->amount, $money->getAmount(), 2), $this->currency);
     }

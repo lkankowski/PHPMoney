@@ -2,7 +2,8 @@
 
 namespace Finance;
 
-use InvalidArgumentException;
+use Exception;
+
 
 class Currency
 {
@@ -12,7 +13,7 @@ class Currency
     public function __construct(string $currencySymbol)
     {
         if (! in_array($currencySymbol, self::CURRENCIES)) {
-            throw new InvalidArgumentException();
+            throw new InvalidCurrencyException();
         }
         $this->currencySymbol = $currencySymbol;
     }
